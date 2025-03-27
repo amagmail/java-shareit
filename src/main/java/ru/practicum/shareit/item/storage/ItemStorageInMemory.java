@@ -65,7 +65,7 @@ public class ItemStorageInMemory implements ItemStorage {
         }
         return items.values().stream()
                 .filter(item -> item.getDescription().toLowerCase().contains(searchText) || item.getName().toLowerCase().contains(searchText))
-                .filter(Item::getAvailable)
+                .filter(item -> item.getAvailable().equals(true))
                 .toList();
     }
 
