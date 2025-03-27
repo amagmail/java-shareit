@@ -57,7 +57,7 @@ public class UserStorageInMemory implements UserStorage {
     @Override
     public User getItem(Long id) {
         if (!users.containsKey(id)) {
-            throw new DuplicateException("Пользователь с идентификатором " + id + " существует");
+            throw new NotFoundException("Пользователь с идентификатором " + id + " не найден");
         }
         return users.get(id);
     }

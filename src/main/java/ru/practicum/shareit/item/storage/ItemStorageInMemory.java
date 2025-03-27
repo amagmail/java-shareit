@@ -1,7 +1,6 @@
 package ru.practicum.shareit.item.storage;
 
 import org.springframework.stereotype.Component;
-import ru.practicum.shareit.exception.DuplicateException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.model.Item;
 
@@ -45,13 +44,18 @@ public class ItemStorageInMemory implements ItemStorage {
     }
 
     @Override
-    public Item getItem(Long userId, Long ItemId) {
-        return items.get(ItemId);
+    public Item getItem(Long userId, Long itemId) {
+        if (!items.containsKey(itemId)) {
+            throw new NotFoundException("Пользователь с идентификатором " + itemId + " не найден");
+        }
+        return items.get(itemId);
     }
 
     @Override
     public Collection<Item> getItems(Long userId) {
-        return items.values();
+        return items.values().stream()
+                .filter(item -> item.getOwner().equals(userId))
+                .toList();
     }
 
     @Override
