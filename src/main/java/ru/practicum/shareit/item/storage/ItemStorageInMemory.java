@@ -59,10 +59,11 @@ public class ItemStorageInMemory implements ItemStorage {
     }
 
     @Override
-    public Collection<Item> getSearch(Long userId, String searchText) {
-        if (searchText.isEmpty() || searchText.isBlank()) {
+    public Collection<Item> getSearch(Long userId, String text) {
+        if (text.isEmpty() || text.isBlank()) {
             return List.of();
         }
+        String searchText = text.toLowerCase();
         return items.values().stream()
                 .filter(item -> item.getDescription().toLowerCase().contains(searchText) || item.getName().toLowerCase().contains(searchText))
                 .filter(item -> item.getAvailable().equals(true))
