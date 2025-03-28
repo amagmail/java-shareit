@@ -10,7 +10,7 @@ public interface ItemService {
 
     ItemDto update(Long userId, Long itemId, ItemDto entity);
 
-    ItemDto getItem(Long userId, Long ItemId);
+    ItemDto getItem(Long userId, Long itemId);
 
     Collection<ItemDto> getItems(Long userId);
 

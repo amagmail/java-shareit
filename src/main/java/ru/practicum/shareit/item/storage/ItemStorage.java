@@ -10,7 +10,7 @@ public interface ItemStorage {
 
     Item update(Long userId, Long itemId, Item item);
 
-    Item getItem(Long userId, Long ItemId);
+    Item getItem(Long userId, Long itemId);
 
     Collection<Item> getItems(Long userId);
 
