@@ -12,7 +12,7 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleValidation(final ValidationException e) {
+    public ErrorResponse handleBadRequest(final ValidationException e) {
         log.error("Ошибка валидации: " + e.getMessage());
         return new ErrorResponse(
                 "Ошибка валидации",
@@ -30,19 +30,9 @@ public class ErrorHandler {
         );
     }
 
-    @ExceptionHandler
+    @ExceptionHandler({DuplicateException.class, RuntimeException.class})
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorResponse handleNotFound(final DuplicateException e) {
-        log.error("Найден дубликат: " + e.getMessage());
-        return new ErrorResponse(
-                "Найден дубликат",
-                e.getMessage()
-        );
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorResponse handleException(final RuntimeException e) {
+    public ErrorResponse handleInternalServerError(final RuntimeException e) {
         log.error("Возникло исключение: " + e.getMessage());
         return new ErrorResponse(
                 "Возникло исключение",

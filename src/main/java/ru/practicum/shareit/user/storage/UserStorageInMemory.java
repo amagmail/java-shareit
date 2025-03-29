@@ -68,7 +68,7 @@ public class UserStorageInMemory implements UserStorage {
     }
 
     // Вспомогательный метод для получения пользователя по почте
-    public Optional<User> getItemByEmail(String email) {
+    private Optional<User> getItemByEmail(String email) {
         return users.values().stream()
                 .filter(user -> user.getEmail().equals(email))
                 .findFirst();
