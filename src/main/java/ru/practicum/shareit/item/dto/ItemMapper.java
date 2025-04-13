@@ -1,5 +1,6 @@
 package ru.practicum.shareit.item.dto;
 
+import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 
 public final class ItemMapper {
@@ -22,6 +23,22 @@ public final class ItemMapper {
         item.setDescription(dto.getDescription());
         item.setAvailable(dto.getAvailable());
         return item;
+    }
+
+    public static CommentDto toCommentDto(Comment comment) {
+
+        CommentDto dto = new CommentDto();
+        dto.setId(comment.getId());
+        dto.setText(comment.getText());
+        return dto;
+    }
+
+    public static Comment toCommentModel(CommentDto dto) {
+
+        Comment comment = new Comment();
+        comment.setId(dto.getId());
+        comment.setText(dto.getText());
+        return comment;
     }
 
 }

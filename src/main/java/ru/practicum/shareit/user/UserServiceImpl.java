@@ -2,6 +2,7 @@ package ru.practicum.shareit.user;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.exception.DuplicateException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserMapper;
@@ -20,14 +21,27 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto create(UserDto entity) {
+        if (userStorage.findByEmail(entity.getEmail()).isPresent()) {
+            throw new DuplicateException("Пользователь с таким email уже существует");
+        }
         User user = userStorage.save(UserMapper.toUserModel(entity));
         return UserMapper.toUserDto(user);
     }
 
     @Override
     public UserDto update(Long id, UserDto entity) {
-        entity.setId(id);
-        User user = userStorage.save(UserMapper.toUserModel(entity));
+        User user = userStorage.findById(id).orElseThrow(() -> new NotFoundException("Пользователь с идентификатором " + id + " не найден"));
+        if (entity.getName() != null) {
+            user.setName(entity.getName());
+        }
+        if (entity.getEmail() != null) {
+            Optional<User> userByEmail = userStorage.findByEmail(entity.getEmail());
+            if (userByEmail.isPresent() && !userByEmail.get().getId().equals(user.getId())) {
+                throw new DuplicateException("Пользователь с таким email уже существует");
+            }
+            user.setEmail(entity.getEmail());
+        }
+        userStorage.save(user);
         return UserMapper.toUserDto(user);
     }
 

@@ -1,22 +1,43 @@
 package ru.practicum.shareit.booking.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.practicum.shareit.booking.enums.Status;
+import lombok.ToString;
+import ru.practicum.shareit.booking.enums.BookingStatus;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
+@Entity
+@Table(name = "bookings", schema = "public")
 public class Booking {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private LocalDate start;
-    private LocalDate end;
+
+    @Column(name = "start_date")
+    private LocalDateTime start;
+
+    @Column(name = "end_date")
+    private LocalDateTime end;
+
+    @JoinColumn(name = "item_id", nullable = false)
+    @ManyToOne
+    @ToString.Exclude
     private Item item;
+
+    @JoinColumn(name = "booker_id", nullable = false)
+    @ManyToOne
+    @ToString.Exclude
     private User booker;
-    private Status status;
+
+    @Enumerated(EnumType.STRING)
+    private BookingStatus status;
 
 }
