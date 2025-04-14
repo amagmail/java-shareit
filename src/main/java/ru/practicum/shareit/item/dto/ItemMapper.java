@@ -5,6 +5,16 @@ import ru.practicum.shareit.item.model.Item;
 
 public final class ItemMapper {
 
+    public static ItemDataDto toItemDataDto(Item item) {
+
+        ItemDataDto dto = new ItemDataDto();
+        dto.setId(item.getId());
+        dto.setName(item.getName());
+        dto.setDescription(item.getDescription());
+        dto.setAvailable(item.getAvailable());
+        return dto;
+    }
+
     public static ItemDto toItemDto(Item item) {
 
         ItemDto dto = new ItemDto();
@@ -30,6 +40,8 @@ public final class ItemMapper {
         CommentDto dto = new CommentDto();
         dto.setId(comment.getId());
         dto.setText(comment.getText());
+        dto.setAuthorName(comment.getAuthor().getName());
+        dto.setCreated(comment.getCreated());
         return dto;
     }
 

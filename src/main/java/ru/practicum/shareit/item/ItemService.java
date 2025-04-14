@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item;
 
 import ru.practicum.shareit.item.dto.CommentDto;
+import ru.practicum.shareit.item.dto.ItemDataDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 
 import java.util.Collection;
@@ -13,7 +14,7 @@ public interface ItemService {
 
     ItemDto update(Long userId, Long itemId, ItemDto entity);
 
-    ItemDto getItem(Long userId, Long itemId);
+    ItemDataDto getItem(Long userId, Long itemId);
 
     Collection<ItemDto> getItems(Long userId);
 

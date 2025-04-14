@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import ru.practicum.shareit.booking.enums.BookingStatus;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
@@ -80,5 +81,14 @@ public interface BookingStorage extends JpaRepository<Booking, Long> {
             "where p.item.owner = :owner and p.status = :status " +
             "order by p.start desc")
     Collection<Booking> findAllByOwnerStatus(User owner, BookingStatus status);
+
+    @Query("select p from Booking p " +
+            "join p.booker " +
+            "join p.item " +
+            "where p.item = :item and p.booker = :booker and p.start < :now " +
+            "order by p.start desc")
+    Collection<Booking> findAllByItemAndBookerPast(Item item, User booker, LocalDateTime now);
+
+    Collection<Booking> findAllByItemOrderByStartAsc(Item item);
 
 }

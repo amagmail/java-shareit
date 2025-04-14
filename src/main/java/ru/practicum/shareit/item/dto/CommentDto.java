@@ -4,13 +4,15 @@ import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Data
 @NoArgsConstructor
 public class CommentDto {
 
     private Long id;
-
-    @NotEmpty(message = "Комментарий не может быть пустым")
     private String text;
+    private String authorName;
+    private LocalDateTime created;
 
 }
