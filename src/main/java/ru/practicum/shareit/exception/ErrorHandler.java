@@ -30,6 +30,16 @@ public class ErrorHandler {
         );
     }
 
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ErrorResponse handleAccessDeniedException(final AccessDeniedException e) {
+        log.error("Доступ запрещен: " + e.getMessage());
+        return new ErrorResponse(
+                "Возникло исключение",
+                e.getMessage()
+        );
+    }
+
     @ExceptionHandler({DuplicateException.class, RuntimeException.class})
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleInternalServerError(final RuntimeException e) {
