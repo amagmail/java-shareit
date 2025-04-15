@@ -7,7 +7,7 @@ import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.storage.UserStorage;
+import ru.practicum.shareit.user.dal.UserRepository;
 
 
 import java.util.Collection;
@@ -17,47 +17,47 @@ import java.util.Optional;
 @Service
 public class UserServiceImpl implements UserService {
 
-    private final UserStorage userStorage;
+    private final UserRepository userRepository;
 
     @Override
     public UserDto create(UserDto entity) {
-        if (userStorage.findByEmail(entity.getEmail()).isPresent()) {
+        if (userRepository.findByEmail(entity.getEmail()).isPresent()) {
             throw new DuplicateException("Пользователь с таким email уже существует");
         }
-        User user = userStorage.save(UserMapper.toUserModel(entity));
+        User user = userRepository.save(UserMapper.toUserModel(entity));
         return UserMapper.toUserDto(user);
     }
 
     @Override
     public UserDto update(Long id, UserDto entity) {
-        User user = userStorage.findById(id).orElseThrow(() -> new NotFoundException("Пользователь с идентификатором " + id + " не найден"));
+        User user = userRepository.findById(id).orElseThrow(() -> new NotFoundException("Пользователь с идентификатором " + id + " не найден"));
         if (entity.getName() != null) {
             user.setName(entity.getName());
         }
         if (entity.getEmail() != null) {
-            Optional<User> userByEmail = userStorage.findByEmail(entity.getEmail());
+            Optional<User> userByEmail = userRepository.findByEmail(entity.getEmail());
             if (userByEmail.isPresent() && !userByEmail.get().getId().equals(user.getId())) {
                 throw new DuplicateException("Пользователь с таким email уже существует");
             }
             user.setEmail(entity.getEmail());
         }
-        userStorage.save(user);
+        userRepository.save(user);
         return UserMapper.toUserDto(user);
     }
 
     @Override
     public void remove(Long id) {
-        Optional<User> maybeUser = userStorage.findById(id);
+        Optional<User> maybeUser = userRepository.findById(id);
         if (maybeUser.isEmpty()) {
             throw new NotFoundException("Пользователь с идентификатором " + id + " не найден");
         }
         User user = maybeUser.get();
-        userStorage.delete(user);
+        userRepository.delete(user);
     }
 
     @Override
     public UserDto getItem(Long id) {
-        Optional<User> maybeUser = userStorage.findById(id);
+        Optional<User> maybeUser = userRepository.findById(id);
         if (maybeUser.isEmpty()) {
             throw new NotFoundException("Пользователь с идентификатором " + id + " не найден");
         }
@@ -67,7 +67,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Collection<UserDto> getItems() {
-        return userStorage.findAll().stream()
+        return userRepository.findAll().stream()
                 .map(UserMapper::toUserDto)
                 .toList();
     }

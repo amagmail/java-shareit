@@ -1,4 +1,4 @@
-package ru.practicum.shareit.booking.storage;
+package ru.practicum.shareit.booking.dal;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -10,7 +10,7 @@ import ru.practicum.shareit.user.model.User;
 import java.time.LocalDateTime;
 import java.util.Collection;
 
-public interface BookingStorage extends JpaRepository<Booking, Long> {
+public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     @Query("select p from Booking p " +
             "join p.booker " +

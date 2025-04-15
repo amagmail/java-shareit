@@ -8,14 +8,14 @@ import ru.practicum.shareit.booking.dto.BookingRequestDto;
 import ru.practicum.shareit.booking.enums.BookingState;
 import ru.practicum.shareit.booking.enums.BookingStatus;
 import ru.practicum.shareit.booking.model.Booking;
-import ru.practicum.shareit.booking.storage.BookingStorage;
+import ru.practicum.shareit.booking.dal.BookingRepository;
 import ru.practicum.shareit.exception.AccessDeniedException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.item.storage.ItemStorage;
+import ru.practicum.shareit.item.dal.ItemRepository;
 import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.storage.UserStorage;
+import ru.practicum.shareit.user.dal.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -24,15 +24,15 @@ import java.util.Collection;
 @Service
 public class BookingServiceImpl implements BookingService {
 
-    private final BookingStorage bookingStorage;
-    private final UserStorage userStorage;
-    private final ItemStorage itemStorage;
+    private final BookingRepository bookingRepository;
+    private final UserRepository userRepository;
+    private final ItemRepository itemRepository;
 
     @Override
     public BookingDto createBooking(Long userId, BookingRequestDto entity) {
         Long id = entity.getItemId();
-        User user = userStorage.findById(userId).orElseThrow(() -> new AccessDeniedException("Пользователь с идентификатором " + userId + " не найден"));
-        Item item = itemStorage.findById(id).orElseThrow(() -> new NotFoundException("Предмет с идентификатором " + id + " не найден"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new AccessDeniedException("Пользователь с идентификатором " + userId + " не найден"));
+        Item item = itemRepository.findById(id).orElseThrow(() -> new NotFoundException("Предмет с идентификатором " + id + " не найден"));
         if (!item.getAvailable()) {
             throw new ValidationException("Предмет с идентификторо " + id + " недоступна для бронирования");
         }
@@ -43,27 +43,27 @@ public class BookingServiceImpl implements BookingService {
         booking.setItem(item);
         booking.setBooker(user);
         booking.setStatus(BookingStatus.WAITING);
-        booking = bookingStorage.save(booking);
+        booking = bookingRepository.save(booking);
         return BookingMapper.toBookingDto(booking);
     }
 
     @Override
     public BookingDto approveBooking(Long userId, Long bookingId, boolean approved) {
-        userStorage.findById(userId).orElseThrow(() -> new AccessDeniedException("Пользователь с идентификатором " + userId + " не найден"));
-        Booking booking = bookingStorage.findById(bookingId).orElseThrow(() -> new NotFoundException("Бронирование с идентификатором " + bookingId + " не найдено"));
+        userRepository.findById(userId).orElseThrow(() -> new AccessDeniedException("Пользователь с идентификатором " + userId + " не найден"));
+        Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> new NotFoundException("Бронирование с идентификатором " + bookingId + " не найдено"));
         if (!booking.getItem().getOwner().equals(userId)) {
             throw new NotFoundException("Пользователь " + userId + " не является владельцем предмета " + booking.getItem().getId());
         }
         BookingStatus status = approved ? BookingStatus.APPROVED : BookingStatus.REJECTED;
         booking.setStatus(status);
-        booking = bookingStorage.save(booking);
+        booking = bookingRepository.save(booking);
         return BookingMapper.toBookingDto(booking);
     }
 
     @Override
     public BookingDto getBookingByID(Long userId, Long bookingId) {
-        User user = userStorage.findById(userId).orElseThrow(() -> new AccessDeniedException("Пользователь с идентификатором " + userId + " не найден"));
-        Booking booking = bookingStorage.findById(bookingId).orElseThrow(() -> new NotFoundException("Пользователь с идентификатором " + bookingId + " не найден"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new AccessDeniedException("Пользователь с идентификатором " + userId + " не найден"));
+        Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> new NotFoundException("Пользователь с идентификатором " + bookingId + " не найден"));
         if (!booking.getBooker().getId().equals(user.getId()) && !booking.getItem().getOwner().equals(user.getId())) {
             throw new NotFoundException("Не удалось найти соответствующую запись по бронированию");
         }
@@ -72,26 +72,26 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public Collection<BookingDto> getBookingAll(Long userId, BookingState state) {
-        User user = userStorage.findById(userId).orElseThrow(() -> new AccessDeniedException("Пользователь с идентификатором " + userId + " не найден"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new AccessDeniedException("Пользователь с идентификатором " + userId + " не найден"));
         Collection<Booking> bookings;
         switch (state) {
             case CURRENT:
-                bookings = bookingStorage.findAllByBookerCurrent(user, LocalDateTime.now());
+                bookings = bookingRepository.findAllByBookerCurrent(user, LocalDateTime.now());
                 break;
             case PAST:
-                bookings = bookingStorage.findAllByBookerPast(user, LocalDateTime.now());
+                bookings = bookingRepository.findAllByBookerPast(user, LocalDateTime.now());
                 break;
             case FUTURE:
-                bookings = bookingStorage.findAllByBookerFuture(user, LocalDateTime.now());
+                bookings = bookingRepository.findAllByBookerFuture(user, LocalDateTime.now());
                 break;
             case WAITING:
-                bookings = bookingStorage.findAllByBookerStatus(user, BookingStatus.WAITING);
+                bookings = bookingRepository.findAllByBookerStatus(user, BookingStatus.WAITING);
                 break;
             case REJECTED:
-                bookings = bookingStorage.findAllByBookerStatus(user, BookingStatus.REJECTED);
+                bookings = bookingRepository.findAllByBookerStatus(user, BookingStatus.REJECTED);
                 break;
             default:
-                bookings = bookingStorage.findAllByBooker(user);
+                bookings = bookingRepository.findAllByBooker(user);
         };
         return bookings.stream()
                 .map(BookingMapper::toBookingDto)
@@ -100,26 +100,26 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public Collection<BookingDto> getBookingAllByOwner(Long userId, BookingState state) {
-        User user = userStorage.findById(userId).orElseThrow(() -> new AccessDeniedException("Пользователь с идентификатором " + userId + " не найден"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new AccessDeniedException("Пользователь с идентификатором " + userId + " не найден"));
         Collection<Booking> bookings;
         switch (state) {
             case CURRENT:
-                bookings = bookingStorage.findAllByOwnerCurrent(user, LocalDateTime.now());
+                bookings = bookingRepository.findAllByOwnerCurrent(user, LocalDateTime.now());
                 break;
             case PAST:
-                bookings = bookingStorage.findAllByOwnerPast(user, LocalDateTime.now());
+                bookings = bookingRepository.findAllByOwnerPast(user, LocalDateTime.now());
                 break;
             case FUTURE:
-                bookings = bookingStorage.findAllByOwnerFuture(user, LocalDateTime.now());
+                bookings = bookingRepository.findAllByOwnerFuture(user, LocalDateTime.now());
                 break;
             case WAITING:
-                bookings = bookingStorage.findAllByOwnerStatus(user, BookingStatus.WAITING);
+                bookings = bookingRepository.findAllByOwnerStatus(user, BookingStatus.WAITING);
                 break;
             case REJECTED:
-                bookings = bookingStorage.findAllByOwnerStatus(user, BookingStatus.REJECTED);
+                bookings = bookingRepository.findAllByOwnerStatus(user, BookingStatus.REJECTED);
                 break;
             default:
-                bookings = bookingStorage.findAllByOwner(user);
+                bookings = bookingRepository.findAllByOwner(user);
         };
         return bookings.stream()
                 .map(BookingMapper::toBookingDto)

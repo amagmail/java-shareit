@@ -1,4 +1,4 @@
-package ru.practicum.shareit.item.storage;
+package ru.practicum.shareit.item.dal;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -7,7 +7,7 @@ import ru.practicum.shareit.item.model.Item;
 import java.util.Collection;
 import java.util.List;
 
-public interface ItemStorage extends JpaRepository<Item, Long> {
+public interface ItemRepository extends JpaRepository<Item, Long> {
 
     @Query("select i from Item i " +
             "where i.available = true " +
