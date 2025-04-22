@@ -57,10 +57,10 @@ public class ItemServiceImpl implements ItemService {
     public ItemDto create(Long userId, ItemDto entity) {
         userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь с идентификатором " + userId + " не найден"));
         Item item = ItemMapper.toItemModel(entity);
-        Long requestId = entity.getRequest();
+        Long requestId = entity.getRequestId();
         if (requestId != null) {
             requestRepository.findById(requestId).orElseThrow(() -> new NotFoundException("Запрос с идентификатором " + requestId + " не найден"));;
-            item.setRequest(requestId);
+            item.setRequestId(requestId);
         }
         item.setOwner(userId);
         item = itemRepository.save(item);
@@ -83,10 +83,10 @@ public class ItemServiceImpl implements ItemService {
         if (entity.getAvailable() != null) {
             item.setAvailable(entity.getAvailable());
         }
-        Long requestId = entity.getRequest();
+        Long requestId = entity.getRequestId();
         if (requestId != null) {
             requestRepository.findById(requestId).orElseThrow(() -> new NotFoundException("Запрос с идентификатором " + requestId + " не найден"));;
-            item.setRequest(requestId);
+            item.setRequestId(requestId);
         }
         item = itemRepository.save(item);
         return ItemMapper.toItemDto(item);

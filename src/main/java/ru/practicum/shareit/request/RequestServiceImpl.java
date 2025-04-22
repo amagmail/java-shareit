@@ -41,7 +41,7 @@ public class RequestServiceImpl implements RequestService {
         userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь с идентификатором " + userId + " не найден"));
         Request request = requestRepository.findById(requestId).orElseThrow(() -> new NotFoundException("Запрос с идентификатором " + requestId + " не найден"));
         RequestDto requestDto =  RequestMapper.toRequestDto(request);
-        List<RequestItemDto> items = itemRepository.findAllByRequest(requestId).stream()
+        List<RequestItemDto> items = itemRepository.findAllByRequestId(requestId).stream()
                 .map(RequestMapper::toRequestItemDto)
                 .toList();
         requestDto.setItems(items);
@@ -55,7 +55,7 @@ public class RequestServiceImpl implements RequestService {
                 .map(RequestMapper::toRequestDto)
                 .toList();
         for (RequestDto r: requests) {
-            List<RequestItemDto> items = itemRepository.findAllByRequest(r.getId()).stream()
+            List<RequestItemDto> items = itemRepository.findAllByRequestId(r.getId()).stream()
                     .map(RequestMapper::toRequestItemDto)
                     .toList();
             r.setItems(items);
@@ -70,7 +70,7 @@ public class RequestServiceImpl implements RequestService {
                 .map(RequestMapper::toRequestDto)
                 .toList();
         for (RequestDto r: requests) {
-            List<RequestItemDto> items = itemRepository.findAllByRequest(r.getId()).stream()
+            List<RequestItemDto> items = itemRepository.findAllByRequestId(r.getId()).stream()
                     .map(RequestMapper::toRequestItemDto)
                     .toList();
             r.setItems(items);
