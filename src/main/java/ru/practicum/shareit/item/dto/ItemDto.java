@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 public class ItemDto {
 
     private Long id;
+    private Long request;
 
     @NotEmpty(message = "Наименование не может быть пустым")
     private String name;

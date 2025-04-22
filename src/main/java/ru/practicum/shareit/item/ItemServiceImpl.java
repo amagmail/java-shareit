@@ -17,6 +17,7 @@ import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.dal.CommentRepository;
 import ru.practicum.shareit.item.dal.ItemRepository;
+import ru.practicum.shareit.request.dal.RequestRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.dal.UserRepository;
 
@@ -32,6 +33,7 @@ public class ItemServiceImpl implements ItemService {
     private final UserRepository userRepository;
     private final CommentRepository commentRepository;
     private final BookingRepository bookingRepository;
+    private final RequestRepository requestRepository;
 
     @Override
     public CommentDto addComment(Long userId, Long itemId, CommentDto entity) {
@@ -55,6 +57,11 @@ public class ItemServiceImpl implements ItemService {
     public ItemDto create(Long userId, ItemDto entity) {
         userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь с идентификатором " + userId + " не найден"));
         Item item = ItemMapper.toItemModel(entity);
+        Long requestId = entity.getRequest();
+        if (requestId != null) {
+            requestRepository.findById(requestId).orElseThrow(() -> new NotFoundException("Запрос с идентификатором " + requestId + " не найден"));;
+            item.setRequest(requestId);
+        }
         item.setOwner(userId);
         item = itemRepository.save(item);
         return ItemMapper.toItemDto(item);
@@ -75,6 +82,11 @@ public class ItemServiceImpl implements ItemService {
         }
         if (entity.getAvailable() != null) {
             item.setAvailable(entity.getAvailable());
+        }
+        Long requestId = entity.getRequest();
+        if (requestId != null) {
+            requestRepository.findById(requestId).orElseThrow(() -> new NotFoundException("Запрос с идентификатором " + requestId + " не найден"));;
+            item.setRequest(requestId);
         }
         item = itemRepository.save(item);
         return ItemMapper.toItemDto(item);

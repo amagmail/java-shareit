@@ -9,7 +9,6 @@ import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.dal.UserRepository;
 
-
 import java.util.Collection;
 import java.util.Optional;
 

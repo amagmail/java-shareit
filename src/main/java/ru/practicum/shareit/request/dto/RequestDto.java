@@ -1,18 +1,19 @@
-package ru.practicum.shareit.request.model;
+package ru.practicum.shareit.request.dto;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 
 @Data
 @NoArgsConstructor
-public class ItemRequest {
+public class RequestDto {
 
     private Long id;
     private String description;
-    private User requestor;
+    private String requestorName;
     private LocalDateTime created;
+    private Collection<RequestItemDto> items;
 
 }
