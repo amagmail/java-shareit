@@ -51,17 +51,31 @@ public class RequestServiceImpl implements RequestService {
     @Override
     public Collection<RequestDto> getMyRequests(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь с идентификатором " + userId + " не найден"));
-        return requestRepository.getMyRequests(user).stream()
+        Collection<RequestDto> requests = requestRepository.getMyRequests(user).stream()
                 .map(RequestMapper::toRequestDto)
                 .toList();
+        for (RequestDto r: requests) {
+            List<RequestItemDto> items = itemRepository.findAllByRequest(r.getId()).stream()
+                    .map(RequestMapper::toRequestItemDto)
+                    .toList();
+            r.setItems(items);
+        }
+        return requests;
     }
 
     @Override
     public Collection<RequestDto> getAllRequests(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь с идентификатором " + userId + " не найден"));
-        return requestRepository.getAllRequests(user).stream()
+        Collection<RequestDto> requests = requestRepository.getAllRequests(user).stream()
                 .map(RequestMapper::toRequestDto)
                 .toList();
+        for (RequestDto r: requests) {
+            List<RequestItemDto> items = itemRepository.findAllByRequest(r.getId()).stream()
+                    .map(RequestMapper::toRequestItemDto)
+                    .toList();
+            r.setItems(items);
+        }
+        return requests;
     }
 
 }
