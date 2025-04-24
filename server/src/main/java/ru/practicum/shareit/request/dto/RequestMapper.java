@@ -34,14 +34,4 @@ public class RequestMapper {
         return dto;
     }
 
-    /*
-    public static Item toRequestItemModel(RequestItemDto dto) {
-
-        Item item = new Item();
-        item.setId(dto.getId());
-        item.setName(dto.getName());
-        item.setOwner(dto.getOwner());
-        return item;
-    } */
-
 }
