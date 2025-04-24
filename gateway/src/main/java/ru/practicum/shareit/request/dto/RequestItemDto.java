@@ -1,5 +1,6 @@
 package ru.practicum.shareit.request.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -8,7 +9,9 @@ import lombok.NoArgsConstructor;
 public class RequestItemDto {
 
     private Long id;
-    private String name;
     private Long owner;
+
+    @NotBlank(message = "Название предмета не может быть пустым")
+    private String name;
 
 }

@@ -13,15 +13,15 @@ import java.time.LocalDateTime;
 @DateRangeControl
 public class BookingRequestDto {
 
-    @NotNull(message = "Необходимо указать идентификатор")
+    @NotNull(message = "Идентификатор предмета не может быть пустым")
     private Long itemId;
 
-    @NotNull(message = "Необходимо указать дату начала бронирования")
-    @Future(message = "Необходимо выбрать дату больше текущего времени")
+    @NotNull(message = "Дата начала бронирования не может быть пустым")
+    @Future(message = "Дата начала бронирования должна быть больше текущей даты")
     private LocalDateTime start;
 
-    @NotNull(message = "Необходимо указать дату окончания бронирования")
-    @Future(message = "Необходимо выбрать дату больше текущего времени")
+    @NotNull(message = "Дата окончания бронирования не может быть пустым")
+    @Future(message = "Дата окончания бронирования должна быть больше текущей даты")
     private LocalDateTime end;
 
 }

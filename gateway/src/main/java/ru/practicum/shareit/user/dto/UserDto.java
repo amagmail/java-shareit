@@ -15,7 +15,7 @@ public class UserDto {
     private String name;
 
     @NotEmpty(message = "Почта пользователя не может быть пустым")
-    @Email(message = "Почта пользователя неверного формата")
+    @Email(message = "Электронная почта пользователя неверного формата")
     private String email;
 
 }

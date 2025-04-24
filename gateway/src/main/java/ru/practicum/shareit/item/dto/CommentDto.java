@@ -14,7 +14,7 @@ public class CommentDto {
     private String authorName;
     private LocalDateTime created;
 
-    @NotBlank(message = "Текст отзыва не может быть пустым")
+    @NotBlank(message = "Текст комментария не может быть пустым")
     private String text;
 
 }

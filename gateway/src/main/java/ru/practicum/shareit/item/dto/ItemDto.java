@@ -12,13 +12,13 @@ public class ItemDto {
     private Long id;
     private Long requestId;
 
-    @NotEmpty(message = "Наименование не может быть пустым")
+    @NotEmpty(message = "Название предмета не может быть пустым")
     private String name;
 
-    @NotEmpty(message = "Описание не может быть пустым")
+    @NotEmpty(message = "Описание предмета не может быть пустым")
     private String description;
 
-    @NotNull(message = "Признак доступности не может быть пустым")
+    @NotNull(message = "Признак доступности предмета не может быть пустым")
     private Boolean available;
 
 }
