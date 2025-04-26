@@ -31,29 +31,31 @@ public class BookingServiceTest {
 
     /*
     @Test
-    void createShouldThrowWhenEndTimeBeforeStartTime() {
+    void createShouldThrowWhenItemNotFound() {
         Long userId = 1L;
-
-        User booker = new User(); //createUser(userId, "Booker", "booker@email.com");
-        booker.setId(userId);
-        booker.setName("BOOKER");
-        booker.setEmail("BOOKER@mail.ru");
-
-        User owner = new User(); //createUser(2L, "Owner", "owner@email.com");
-        booker.setId(2L);
-        booker.setName("OWNER");
-        booker.setEmail("OWNER@mail.ru");
-
-        Item item = new Item(); //createItem(1L, "Item", owner, true);
-        item.setId(1L);
-        item.setName("ITEM");
-        item.setOwner(2L);
-        item.setAvailable(true);
 
         BookingRequestDto booking = new BookingRequestDto();
         booking.setItemId(1L);
         booking.setStart(future);
         booking.setEnd(past);
-    } */
 
+        User owner = new User();
+        owner.setId(2L);
+        owner.setName("OWNER");
+        owner.setEmail("OWNER@mail.ru");
+
+        Item item = new Item();
+        item.setId(1L);
+        item.setName("ITEM");
+        item.setOwner(2L);
+        item.setAvailable(true);
+
+        when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item));
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+
+        assertThrows(AccessDeniedException.class, () -> bookingService.createBooking(userId, booking));
+        verify(itemRepository).findById(anyLong());
+        verify(userRepository).findById(userId);
+        verifyNoInteractions(bookingRepository);
+    } */
 }
