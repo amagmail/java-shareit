@@ -15,6 +15,8 @@ import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingRequestDto;
 import ru.practicum.shareit.booking.enums.BookingStatus;
 import ru.practicum.shareit.exception.ErrorHandler;
+import ru.practicum.shareit.exception.NotFoundException;
+import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.dto.UserDto;
@@ -49,43 +51,69 @@ public class BookingControllerTest {
     }
 
     @Test
-    void createBooking() throws Exception {
-        Long userId = 2L;
-        LocalDateTime start = LocalDateTime.now().plusDays(1);
-        LocalDateTime end = LocalDateTime.now().plusDays(2);
+    void createBookingWithUnknownUser() throws Exception {
+        Long userId = 10L;
+        LocalDateTime start = LocalDateTime.now();
+        LocalDateTime end = LocalDateTime.now().plusDays(1);
 
         BookingRequestDto bookingRequestDto = new BookingRequestDto();
         bookingRequestDto.setItemId(1L);
         bookingRequestDto.setStart(start);
         bookingRequestDto.setEnd(end);
 
-        ItemDto itemDto = new ItemDto();
-        itemDto.setId(1L);
-        itemDto.setName("ITEM");
-        itemDto.setDescription("TEXT");
-        itemDto.setAvailable(true);
-
-        UserDto userDto = new UserDto();
-        userDto.setId(2L);
-        userDto.setName("USER-2");
-        userDto.setEmail("USER-2@email.ru");
-
-        BookingDto bookingDto = new BookingDto();
-        bookingDto.setId(1L);
-        bookingDto.setItem(itemDto);
-        bookingDto.setBooker(userDto);
-        bookingDto.setStart(start);
-        bookingDto.setEnd(end);
-        bookingDto.setStatus(BookingStatus.WAITING);
-
-        when(bookingService.createBooking(eq(2L), any())).thenReturn(bookingDto);
+        when(bookingService.createBooking(eq(userId), any()))
+                .thenThrow(new NotFoundException("Объект не найден"));
 
         mockMvc.perform(post("/bookings")
-                        .header("X-Sharer-User-Id", 2L)
-                        .content(mapper.writeValueAsString(bookingDto))
+                        .header("X-Sharer-User-Id", userId)
+                        .content(mapper.writeValueAsString(bookingRequestDto))
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1L));
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.error").value("Объект не найден"));
+    }
+
+    @Test
+    void createBookingWithUnknownItem() throws Exception {
+        Long userId = 1L;
+        LocalDateTime start = LocalDateTime.now();
+        LocalDateTime end = LocalDateTime.now().plusDays(1);
+
+        BookingRequestDto bookingRequestDto = new BookingRequestDto();
+        bookingRequestDto.setItemId(10L);
+        bookingRequestDto.setStart(start);
+        bookingRequestDto.setEnd(end);
+
+        when(bookingService.createBooking(eq(userId), any()))
+                .thenThrow(new NotFoundException("Объект не найден"));
+
+        mockMvc.perform(post("/bookings")
+                        .header("X-Sharer-User-Id", userId)
+                        .content(mapper.writeValueAsString(bookingRequestDto))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.error").value("Объект не найден"));
+    }
+
+    @Test
+    void createBookingWithUnavailableItem() throws Exception {
+        Long userId = 1L;
+        LocalDateTime start = LocalDateTime.now();
+        LocalDateTime end = LocalDateTime.now().plusDays(1);
+
+        BookingRequestDto bookingRequestDto = new BookingRequestDto();
+        bookingRequestDto.setItemId(1L);
+        bookingRequestDto.setStart(start);
+        bookingRequestDto.setEnd(end);
+
+        when(bookingService.createBooking(eq(userId), any()))
+                .thenThrow(new ValidationException("Ошибка валидации"));
+
+        mockMvc.perform(post("/bookings")
+                        .header("X-Sharer-User-Id", userId)
+                        .content(mapper.writeValueAsString(bookingRequestDto))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value("Ошибка валидации"));
     }
 
 }
