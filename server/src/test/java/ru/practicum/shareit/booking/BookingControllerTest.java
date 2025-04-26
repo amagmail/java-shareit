@@ -33,9 +33,6 @@ public class BookingControllerTest {
     @Mock
     private BookingService bookingService;
 
-    @Mock
-    private UserService userService;
-
     @InjectMocks
     private BookingController bookingController;
 
