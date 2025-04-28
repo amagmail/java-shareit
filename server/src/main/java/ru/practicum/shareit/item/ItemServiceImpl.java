@@ -18,6 +18,7 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.dal.CommentRepository;
 import ru.practicum.shareit.item.dal.ItemRepository;
 import ru.practicum.shareit.request.dal.RequestRepository;
+import ru.practicum.shareit.request.model.Request;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.dal.UserRepository;
 
@@ -59,8 +60,8 @@ public class ItemServiceImpl implements ItemService {
         Item item = ItemMapper.toItemModel(entity);
         Long requestId = entity.getRequestId();
         if (requestId != null) {
-            requestRepository.findById(requestId).orElseThrow(() -> new NotFoundException("Запрос с идентификатором " + requestId + " не найден"));;
-            item.setRequestId(requestId);
+            Request request = requestRepository.findById(requestId).orElseThrow(() -> new NotFoundException("Запрос с идентификатором " + requestId + " не найден"));;
+            item.setRequest(request);
         }
         item.setOwner(userId);
         item = itemRepository.save(item);
@@ -85,8 +86,8 @@ public class ItemServiceImpl implements ItemService {
         }
         Long requestId = entity.getRequestId();
         if (requestId != null) {
-            requestRepository.findById(requestId).orElseThrow(() -> new NotFoundException("Запрос с идентификатором " + requestId + " не найден"));;
-            item.setRequestId(requestId);
+            Request request = requestRepository.findById(requestId).orElseThrow(() -> new NotFoundException("Запрос с идентификатором " + requestId + " не найден"));;
+            item.setRequest(request);
         }
         item = itemRepository.save(item);
         return ItemMapper.toItemDto(item);
